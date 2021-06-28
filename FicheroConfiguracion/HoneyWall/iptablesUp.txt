@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#PERMITIR EL ENRUTAMIENTO DEL HONEYWALL
+echo "1" > /proc/sys/net/ipv4/ip_forward
+
+#ESTABLECE POLITICA POR DEFECTO TODO ACEPTAR
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -t nat -P PREROUTING ACCEPT
+iptables -t nat -P POSTROUTING ACCEPT
+
+#INTRODUCIENDO SOURCE NAT (DINAMICO) CON IPTABLES
+iptables -t nat -A POSTROUTING -s 10.10.1.0/24 -o ens37 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.10.1.0/24 -o ens33 -j MASQUERADE
+
+#INTRODUCIENDO PORT FORWARDING WEB AULAS.INF.UVA.ES (80)
+iptables -A FORWARD -m state -p tcp -d 10.10.1.2 --dport 3000 --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 10.10.1.2:3000
+
+#INTRODUCIENTO PORT FORWARDING A JAIR.LAB.INF.UVA.ES (22)
+iptables -t nat -I PREROUTING -p tcp -d 10.10.2.1 --dport 22 -j DNAT --to 10.10.1.2:3001
+iptables -A FORWARD -m state -p tcp -d 10.10.1.2 --dport 3001 --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+
+#BLOQUEAR PUERTOS 2222, 5601 (KIBANA), 9200 ELASTICSEARCH, 9300
+iptables -A INPUT -i ens37 -p tcp --destination-port 5601 -j LOG --log-prefix 'Access port blocked (5601)'
+iptables -A INPUT -i ens37 -p tcp --destination-port 5601 -j DROP
+
+iptables -A INPUT -i ens37 -p tcp --destination-port 2222 -j LOG --log-prefix 'Access port blocked (2222)'
+iptables -A INPUT -i ens37 -p tcp --destination-port 2222 -j DROP
+
+iptables -A INPUT -i ens37 -p tcp --destination-port 9200 -j LOG --log-prefix 'Access port blocked (9200)'
+iptables -A INPUT -i ens37 -p tcp --destination-port 9200 -j DROP
+
+iptables -A INPUT -i ens37 -p tcp --destination-port 9300 -j LOG --log-prefix 'Access port blocked (9300)'
+iptables -A INPUT -i ens37 -p tcp --destination-port 9300 -j DROP

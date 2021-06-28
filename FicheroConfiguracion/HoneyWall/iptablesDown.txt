@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#DENEGAR EL ENRUTAMIENTO DEL HONEYWALL
+echo "0" > /proc/sys/net/ipv4/ip_forward
+
+
+#REGLAS PARA BORRAR LAS IPTABLES
+iptables -F
+iptables -X
+iptables -Z
+iptables -t nat -F

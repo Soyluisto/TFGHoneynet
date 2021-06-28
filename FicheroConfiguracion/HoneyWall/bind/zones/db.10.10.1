@@ -1,0 +1,18 @@
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	HoneyWall.inf.uva.es. admin.inf.uva.es. (
+			      3		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+
+	IN	NS	HoneyWall.inf.uva.es.
+
+1	IN	PTR	HoneyWall.inf.uva.es.
+2	IN	PTR	aulas.inf.uva.es.
+2	IN	PTR	jair.lab.inf.uva.es.
+

@@ -1,0 +1,32 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto ens33
+iface ens33 inet static
+	address 192.168.1.45
+	netmask 255.255.255.0
+	network 192.168.1.0
+	broadcast 192.168.1.255
+	gateway 192.168.1.1
+
+#Interface WAN con Kali
+auto ens37
+iface ens37 inet static
+	address 10.10.2.1
+	netmask	255.255.255.0
+	network 10.10.2.0
+	broadcast 10.10.2.255
+
+#Interface LAN con HoneyDocker
+auto ens38
+iface ens38 inet static
+	address 10.10.1.1
+	netmask 255.255.255.0
+	network 10.10.1.0
+	broadcast 10.10.1.255
